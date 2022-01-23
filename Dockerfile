@@ -24,9 +24,10 @@ RUN rm -rf node_modules && \
 #
 # It makes no sense to go 2-stage build with python
 # becaues f**cking Pillow requires /usr/lib wrapped .so files
-# So you have to install *-dev packages onto your alpine 20mb image.
-# And quickly becomes 700 mb afterwards
-# We'll build image of the following structure images
+# So you have to install *-dev packages onto your alpine 20M image.
+# And it quickly becomes 700M afterwards
+#
+# We're going to construct the following package structure:
 #
 # app
 #  |-front   <- nodejs
