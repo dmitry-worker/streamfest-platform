@@ -1,0 +1,6 @@
+[submodule "back"]
+	path = back
+	url = git@github.com:TapkiPlus/streamfeast_api.git
+[submodule "front"]
+	path = front
+	url = git@github.com:TapkiPlus/streamfest_front.git
