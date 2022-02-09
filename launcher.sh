@@ -6,7 +6,7 @@ yarn start &
 
 # launch back
 cd /app/back
-python manage.py runserver --noreload 0:8000 &
+gunicorn --bind=0.0.0.0:8000 --threads=10 --workers=1 streamfeast_api.wsgi &
 
 # await of any
 wait -n

@@ -79,6 +79,9 @@ EXPOSE 8000
 ##################
 # PART 3: launch #
 ##################
+# bash is required to run both processes simultaneously
+RUN apk add --no-cache bash
+
 # We will start both services using custom launcher script!
 WORKDIR /app
 COPY launcher.sh .
@@ -87,4 +90,4 @@ COPY launcher.sh .
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
 
-CMD ["sh", "launcher.sh"]
+CMD ["bash", "launcher.sh"]
