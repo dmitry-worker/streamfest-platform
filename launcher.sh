@@ -2,6 +2,10 @@
 
 # launch front
 cd /app/front
+find .nuxt/ \
+  -type f \
+  -name '*.js' \
+  -exec sed -i "s/%%TARGET_HOSTNAME%%/${TARGET_HOSTNAME}/g" {} \;
 yarn start &
 
 # launch back
