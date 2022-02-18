@@ -15,8 +15,8 @@ RUN yarn install \
 # It must receive all the arguments when it builds
 # We will swap it later
 RUN \
-  export TARGET_HOSTNAME='%%TARGET_HOSTNAME%%' && \
-  yarn build
+    export TARGET_HOSTNAME='%%TARGET_HOSTNAME%%' && \
+    yarn build
 
 RUN rm -rf node_modules && \
     NODE_ENV=production yarn install \
