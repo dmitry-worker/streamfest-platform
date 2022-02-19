@@ -40,14 +40,27 @@ RUN rm -rf node_modules && \
 #
 FROM nikolaik/python-nodejs:python3.9-nodejs12-alpine
 
+# We don't need postgres binaries because we (thank god!) use psycopg2-binary
+# But we have to provide libjpeg and all the other trash for pillow to work
+RUN apk update \
+    && apk add --no-cache --virtual build-deps gcc python3-dev musl-dev \
+    # && apk add postgresql \
+    # && apk add postgresql-dev \
+    # && pip install psycopg2 \
+    && apk add --no-cache jpeg-dev zlib-dev libjpeg \
+    && apk add --no-cache bash
+
+# Create a user
+RUN mkdir /opt/venv
+RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown appuser /opt/venv
+USER appuser
 
 ###################
 # PART 1: node.js #
 ###################
 WORKDIR /app/front
-COPY --from=node-compiler /app .
+COPY --chown=appuser --from=node-compiler /app .
 EXPOSE 3000
-
 
 ##################
 # PART 2: django #
@@ -59,17 +72,8 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 WORKDIR /app/back
 # this will move everything to app dir
-COPY back .
-# We don't need postgres binaries because we (thank god!) use psycopg2-binary
-# But we have to provide libjpeg and all the other trash for pillow to work
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    # && apk add postgresql \
-    # && apk add postgresql-dev \
-    # && pip install psycopg2 \
-    && apk add jpeg-dev zlib-dev libjpeg
-#   # && pip install Pillow
-#   # && apk del build-deps
+COPY --chown=appuser back .
+
 RUN pip install -r requirements.txt
 # Keeps Python from generating .pyc files in the container
 # We probably need this as everything is compiled on compile-image
@@ -84,15 +88,8 @@ EXPOSE 8000
 ##################
 # PART 3: launch #
 ##################
-# bash is required to run both processes simultaneously
-RUN apk add --no-cache bash
-
 # We will start both services using custom launcher script!
 WORKDIR /app
 COPY launcher.sh .
-
-# Create a user (don't run as root)
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
 
 CMD ["bash", "launcher.sh"]
